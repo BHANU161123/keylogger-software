@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Educational Keylogger Simulator</title>
+
+  <style>
+
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      font-family:Arial, sans-serif;
+    }
+
+    body{
+      background:linear-gradient(135deg,#0f172a,#1e293b);
+      color:white;
+      min-height:100vh;
+      padding:30px;
+    }
+
+    .container{
+      max-width:1000px;
+      margin:auto;
+    }
+
+    h1{
+      text-align:center;
+      margin-bottom:10px;
+      color:#a855f7;
+    }
+
+    .subtitle{
+      text-align:center;
+      color:#cbd5e1;
+      margin-bottom:30px;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:25px;
+    }
+
+    .card{
+      background:#111827;
+      padding:25px;
+      border-radius:18px;
+      box-shadow:0 0 20px rgba(0,0,0,0.4);
+    }
+
+    h2{
+      margin-bottom:15px;
+      color:#c084fc;
+    }
+
+    textarea{
+      width:100%;
+      height:220px;
+      background:#1e293b;
+      border:none;
+      border-radius:12px;
+      padding:15px;
+      color:white;
+      font-size:16px;
+      resize:none;
+      outline:none;
+    }
+
+    button{
+      width:100%;
+      padding:14px;
+      border:none;
+      border-radius:12px;
+      margin-top:15px;
+      cursor:pointer;
+      background:linear-gradient(135deg,#9333ea,#7e22ce);
+      color:white;
+      font-size:16px;
+      font-weight:bold;
+      transition:0.3s;
+    }
+
+    button:hover{
+      transform:scale(1.02);
+      opacity:0.9;
+    }
+
+    .logs{
+      background:#0f172a;
+      border-radius:12px;
+      padding:15px;
+      height:220px;
+      overflow:auto;
+      white-space:pre-wrap;
+      line-height:1.6;
+      margin-top:10px;
+    }
+
+    .info{
+      margin-top:30px;
+      background:#111827;
+      padding:25px;
+      border-radius:18px;
+      line-height:1.8;
+    }
+
+    .safe{
+      color:#4ade80;
+      font-weight:bold;
+    }
+
+    .warning{
+      color:#f87171;
+      font-weight:bold;
+    }
+
+    @media(max-width:768px){
+      .grid{
+        grid-template-columns:1fr;
+      }
+    }
+
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+
+    <h1>⌨️ Educational Keylogger Simulator</h1>
+
+    <p class="subtitle">
+      Safe browser-based keyboard logging demo for learning purposes
+    </p>
+
+    <div class="grid">
+
+      <!-- Typing Area -->
+      <div class="card">
+
+        <h2>Typing Area</h2>
+
+        <textarea
+          id="typingArea"
+          placeholder="Type here to simulate keyboard logging..."
+        ></textarea>
+
+        <button onclick="clearLogs()">
+          Clear Logs
+        </button>
+
+      </div>
+
+      <!-- Log Viewer -->
+      <div class="card">
+
+        <h2>Secure Local Log Viewer</h2>
+
+        <div class="logs" id="logViewer">
+          No logs yet...
+        </div>
+
+        <button onclick="downloadLogs()">
+          Download Logs
+        </button>
+
+      </div>
+
+    </div>
+
+    <div class="info">
+
+      <h2>📘 Project Explanation</h2>
+
+      <p>
+        This project demonstrates how keyboard event logging works
+        inside a controlled environment.
+      </p>
+
+      <br>
+
+      <p class="safe">
+        ✅ Safe: Captures keys ONLY inside this webpage textarea
+      </p>
+
+      <p class="warning">
+        ❌ Does NOT capture system-wide keystrokes
+      </p>
+
+      <br>
+
+      <h3>Learning Outcomes</h3>
+
+      <p>• JavaScript keyboard events</p>
+      <p>• Logging and local storage</p>
+      <p>• Secure browser-based monitoring</p>
+      <p>• Ethical cybersecurity practices</p>
+
+    </div>
+
+  </div>
+
+  <script>
+
+    const typingArea = document.getElementById("typingArea");
+    const logViewer = document.getElementById("logViewer");
+
+    let logs = JSON.parse(localStorage.getItem("keyLogs")) || [];
+
+    updateViewer();
+
+    typingArea.addEventListener("keydown", function(event){
+
+      const time = new Date().toLocaleTimeString();
+
+      let key = event.key;
+
+      if(key === " "){
+        key = "[SPACE]";
+      }
+
+      if(key === "Enter"){
+        key = "[ENTER]";
+      }
+
+      const logEntry = `${time} → ${key}`;
+
+      logs.push(logEntry);
+
+      localStorage.setItem("keyLogs", JSON.stringify(logs));
+
+      updateViewer();
+
+    });
+
+    function updateViewer(){
+
+      if(logs.length === 0){
+        logViewer.innerText = "No logs yet...";
+        return;
+      }
+
+      logViewer.innerText = logs.join("\n");
+
+      logViewer.scrollTop = logViewer.scrollHeight;
+    }
+
+    function clearLogs(){
+
+      logs = [];
+
+      localStorage.removeItem("keyLogs");
+
+      updateViewer();
+    }
+
+    function downloadLogs(){
+
+      const blob = new Blob(
+        [logs.join("\n")],
+        {type:"text/plain"}
+      );
+
+      const link = document.createElement("a");
+
+      link.href = URL.createObjectURL(blob);
+
+      link.download = "keyboard_logs.txt";
+
+      link.click();
+    }
+
+  </script>
+
+</body>
+</html>
